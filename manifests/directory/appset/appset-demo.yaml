@@ -21,7 +21,7 @@ spec:
         helm:
           parameters:
             - name: replicaCount
-              value: "1"
+              value: "3"
           valueFiles:
             - values.yaml
         repoURL: https://github.com/AliyunContainerService/gitops-demo.git
