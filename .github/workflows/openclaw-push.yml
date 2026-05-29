@@ -1,0 +1,57 @@
+name: Notify OpenClaw on Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify-openclaw:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send push notification to OpenClaw
+        shell: bash
+        env:
+          OPENCLAW_HOOK_URL: ${{ secrets.OPENCLAW_HOOK_URL }}
+          OPENCLAW_HOOK_TOKEN: ${{ secrets.OPENCLAW_HOOK_TOKEN }}
+          OPENCLAW_AGENT_ID: ${{ secrets.OPENCLAW_AGENT_ID }}
+          REPO: ${{ github.repository }}
+          REF_NAME: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          ACTOR: ${{ github.actor }}
+          SERVER_URL: ${{ github.server_url }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+
+          COMMIT_URL="${SERVER_URL}/${REPO}/commit/${SHA}"
+
+          PAYLOAD="$(jq -n \
+            --arg repo "$REPO" \
+            --arg ref "$REF_NAME" \
+            --arg sha "$SHA" \
+            --arg actor "$ACTOR" \
+            --arg commit_url "$COMMIT_URL" \
+            --arg agent_id "${OPENCLAW_AGENT_ID:-}" \
+            '{
+              name: "GitHub",
+              wakeMode: "now",
+              deliver: true,
+              message: (
+                "GitHub push notification\n" +
+                "Repository: " + $repo + "\n" +
+                "Branch: " + $ref + "\n" +
+                "Actor: " + $actor + "\n" +
+                "Commit: " + $sha + "\n" +
+                "URL: " + $commit_url
+              )
+            } + (
+              if $agent_id != "" then { agentId: $agent_id } else {} end
+            )'
+          )"
+
+          curl --fail-with-body -sS -X POST "$OPENCLAW_HOOK_URL" \
+            -H "Authorization: Bearer ${OPENCLAW_HOOK_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data "$PAYLOAD"
