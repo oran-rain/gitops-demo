@@ -13,9 +13,9 @@ jobs:
       - name: Send push notification to OpenClaw
         shell: bash
         env:
-          OPENCLAW_HOOK_URL: http://47.94.232.140:10714/hooks/agent
-          OPENCLAW_HOOK_TOKEN: UmG7L9IIVE7OaIHiGqXdyj2wlgpGHTaSa+8H5kkEoxs=
-          OPENCLAW_AGENT_ID: argocd
+          OPENCLAW_HOOK_URL: ${{ secrets.OPENCLAW_HOOK_URL }}
+          OPENCLAW_HOOK_TOKEN: ${{ secrets.OPENCLAW_HOOK_TOKEN }}
+          OPENCLAW_AGENT_ID: ${{ secrets.OPENCLAW_AGENT_ID }}
           REPO: ${{ github.repository }}
           REF_NAME: ${{ github.ref_name }}
           SHA: ${{ github.sha }}
@@ -51,7 +51,7 @@ jobs:
             )'
           )"
 
-          curl --fail-with-body -sS -X POST http://47.94.232.140:10714/hooks/agent \
-            -H "Authorization: Bearer UmG7L9IIVE7OaIHiGqXdyj2wlgpGHTaSa+8H5kkEoxs=" \
+          curl --fail-with-body -sS -X POST "$OPENCLAW_HOOK_URL" \
+            -H "Authorization: Bearer ${OPENCLAW_HOOK_TOKEN}" \
             -H "Content-Type: application/json" \
             --data "$PAYLOAD"
