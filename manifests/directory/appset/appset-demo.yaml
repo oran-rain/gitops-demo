@@ -13,7 +13,7 @@ spec:
             argocd.argoproj.io/secret-type: cluster
   template:
     metadata:
-      name: '{{.metadata.labels.short-name}}-echoserver'
+      name: '{{.name}}-echoserver'
       namespace: argocd
     spec:
       project: "default"
