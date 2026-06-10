@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: echo-server
   name: echo-server
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/instance: echo-server
