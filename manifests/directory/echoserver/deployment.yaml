@@ -20,7 +20,7 @@ spec:
         app.kubernetes.io/name: echo-server
     spec:
       containers:
-        - image: registry-cn-hangzhou.ack.aliyuncs.com/dev/echo-server:v1.0
+        - image: registry.cn-hangzhou.aliyuncs.com/haoshuwei24/echo-server:v1.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
